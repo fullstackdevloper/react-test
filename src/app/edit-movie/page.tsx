@@ -9,7 +9,8 @@ export default function UpdateMovie() {
   const [movieId, setMovieId] = useState<string | null>(null);
 
   const checkAuthAndRedirect = useCallback(() => {
-    if (!localStorage.getItem("token")) {
+    let token = localStorage.getItem("token")
+    if (!token) {
       router.push("/");
     }
   }, [router]);
