@@ -4,9 +4,9 @@ import ShapeBackground from "./components/common/backgroundShape";
 import SignIn from "./auth/signin/page";
 import MoviesList from "./movies-list/page";
 import { useState } from "react";
-
+import { getToken } from "@/utils/token";
 export default function Home() {
-  const [isAuthExists, setIsAuth] = useState(localStorage.getItem("token"));
+  const [isAuthExists, setIsAuth] = useState(getToken);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between bg-[#093545]">
