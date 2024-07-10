@@ -1,13 +1,11 @@
 import connect from "@/dbConfig/connect";
 import User from "@/models/usersModel";
-
 import {NextRequest, NextResponse} from "next/server";
 import bcryptjs from "bcryptjs";
 import {
-  successResponseWithMessage,
   successResponseWithData,
-  badRequest,
 } from "@/helpers/apiResponses";
+
 connect();
 
 /**
@@ -25,13 +23,14 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const {email, password} = reqBody;
 
-    // Custom validation
+    //validation
     if (email) {
       return NextResponse.json(
         {message: "email is required and must be a string"},
         {status: 400}
       );
     }
+
     if (password) {
       return NextResponse.json(
         {
@@ -42,7 +41,7 @@ export async function POST(request: NextRequest) {
         {status: 400}
       );
     }
-    console.log(reqBody);
+   
 
     //check if user already exists
     const user = await User.findOne({email});
@@ -64,11 +63,9 @@ export async function POST(request: NextRequest) {
     });
 
     const savedUser = await newUser.save();
-    console.log(savedUser);
 
     return successResponseWithData(
       NextResponse,
-
       true,
       "User  created successfully Res",
       savedUser

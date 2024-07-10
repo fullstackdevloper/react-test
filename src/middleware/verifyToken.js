@@ -25,7 +25,7 @@ const verifyToken = (handler) => {
       }
 
       const decodedToken = jwt.verify(token, jwtSecretKey);
-      console.log("decodedToken : " + JSON.stringify(decodedToken));
+     
       if (!decodedToken) {
         return NextResponse.json({ statusCode: 401, status: false, message: "Invalid token" }, { status: 401 });
       }

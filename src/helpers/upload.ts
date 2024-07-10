@@ -35,7 +35,6 @@ export async function handleFileUpload(
  
     return {fileUrl, filename};
   } catch (error) {
-    console.error("Error in handleFileUpload:", error);
     throw error;
   }
 }
@@ -78,7 +77,6 @@ export async function handleFileUpdate(
  
     return {fileUrl: newFileUrl, filename: newFilename};
   } catch (error) {
-    console.error("Error in handleFileUpdate:", error);
     throw error;
   }
 }

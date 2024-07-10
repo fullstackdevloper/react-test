@@ -6,7 +6,7 @@ import ShapeBackground from "../components/common/backgroundShape";
 import Link from "next/link";
 import PrimaryButton from "../components/common/primaryBtn";
 import MoviesList from "../components/movies";
-import axios from "axios"; // Import Axios
+import axios from "axios";
 import { useRouter } from "next/navigation";
 
 interface Movie {
@@ -36,10 +36,12 @@ const MovieList: React.FC = () => {
   }, [currentPage]);
 
   async function fetchMovies(page: number) {
+
     const token = localStorage.getItem("token");
     const query = `?page=${page}&limit=${limit}`;
 
     try {
+
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_URL}/api/movie${query}`,
         {
@@ -54,10 +56,11 @@ const MovieList: React.FC = () => {
 
       if (data) {
         setMovies(data.data);
-        setTotalPages(data.totalPages); // Assuming API returns total pages
+        setTotalPages(data.totalPages);
       } else {
         setMovies([]);
       }
+
     } catch (error) {
       setMovies([]);
     } finally {
@@ -66,11 +69,13 @@ const MovieList: React.FC = () => {
   }
 
   const handleLogout = async () => {
+    
     const token = localStorage.getItem("token");
     localStorage.removeItem("token");
+
     await axios.post(
       `${process.env.NEXT_PUBLIC_URL}/api/logout`,
-      {}, // Body is empty if it's just a logout request
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,

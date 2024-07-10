@@ -2,8 +2,6 @@ import {NextRequest, NextResponse} from "next/server";
 import connect from "@/dbConfig/connect";
 import Movies from "@/models/moviesModel";
 import verifyAuth from "@/middleware/verifyToken";
-import {handleFileUpload, handleFileUpdate} from "@/helpers/upload";
-import { movieSchema, updateMovieSchema } from "@/utils/schemaValidations"
 import moment from "moment";
 connect();
 
@@ -26,7 +24,6 @@ connect();
 async function POST(req: NextRequest, userInfo: any) {
   try {
       const formData = await req.formData();
-      console.log("formData : ",formData)
       const title = formData.get("movieTitle") as string;
       const publishingDate = formData.get("publishingYear") as string; 
 
@@ -63,6 +60,7 @@ async function POST(req: NextRequest, userInfo: any) {
       //     { status: 400 }
       //   );
       // }
+
       const userId = userInfo.id;
 
       let dataToSave: any = {
@@ -73,7 +71,6 @@ async function POST(req: NextRequest, userInfo: any) {
 
       // if (image) {
       //     const uploadResult = await handleFileUpload(req, image);
-      //     // console.log("uploadResult : " + uploadResult)
       //     if (!uploadResult) {
       //         throw new Error("File upload failed");
       //     }
@@ -83,7 +80,6 @@ async function POST(req: NextRequest, userInfo: any) {
       //     dataToSave.image = fileUrl;
       // }
 
-      // Assuming Movies is your database model for movies and has a create method
       const savedData = await Movies.create(dataToSave);
 
       return NextResponse.json(
@@ -91,7 +87,6 @@ async function POST(req: NextRequest, userInfo: any) {
           { status: 201 }
       );
   } catch (error: any) {
-      console.error("Error in POST:", error);
       return NextResponse.json({ statusCode:400, status:false, message: error.message }, { status: 400 });
   }
 }
@@ -114,18 +109,19 @@ async function POST(req: NextRequest, userInfo: any) {
  */
 async function PUT(req: NextRequest, {params}: {params: {id: string}}) {
   try {
+
     const data = await req.json();
-    console.log("---data-", data);
     const {id} = params;
     const updatedData = await Movies.findOneAndUpdate({_id: id}, data, {
       new: true,
     });
+
     return NextResponse.json(
       {data: updatedData, message: "success"},
       {status: 200}
     );
+
   } catch (error: any) {
-    console.error("Error in PUT:", error);
     return NextResponse.json({error: error.message}, {status: 500});
   }
 }
@@ -178,8 +174,8 @@ async function GET(req: NextRequest) {
       },
       { status: 200 }
     );
+
   } catch (error: any) {
-    console.error("Error in GET:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

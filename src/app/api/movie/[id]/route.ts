@@ -2,13 +2,6 @@ import {NextRequest, NextResponse} from "next/server";
 import connect from "@/dbConfig/connect";
 import Movies from "@/models/moviesModel";
 import verifyAuth from "@/middleware/verifyToken";
-import {
-  successResponseWithMessage,
-  successResponseWithData,
-  badRequest,
-  serverError,
-} from "@/helpers/apiResponses";
-import {handleFileUpdate, handleFileUpload} from "@/helpers/upload";
 import moment from "moment";
 
 connect();
@@ -102,8 +95,6 @@ async function PUT(
       }
  
       // if (image) {
-
-
       //   if (movie.image) {
       //     if(typeof image != 'string') {
       //       const uploadResult = await handleFileUpdate(image, movie.image);
@@ -176,6 +167,7 @@ async function GET(req: NextRequest, userInfo: any, params: {id: string}) {
       _id: id,
       isDeleted: false,
     };
+
     const movieById = await Movies.findOne(criteria);
 
     if (!movieById) {
@@ -189,8 +181,8 @@ async function GET(req: NextRequest, userInfo: any, params: {id: string}) {
       {statusCode: 200, status: true, data: movieById, message: "success"},
       {status: 200}
     );
+
   } catch (error: any) {
-    console.error("Error in GET:", error);
     return NextResponse.json({error: error.message}, {status: 500});
   }
 }
@@ -208,22 +200,23 @@ async function GET(req: NextRequest, userInfo: any, params: {id: string}) {
  */
 async function DELETE(req: NextRequest, userInfo: any, params: {id: string}) {
   try {
+
     const {id} = params;
-    console.log("---params-", params);
     const deletedData = await Movies.findOneAndUpdate(
       {_id: id},
       {isDeleted: true},
       {new: true}
     );
+
     if (!deletedData) {
       return NextResponse.json({error: "Movie not found"}, {status: 404});
     }
+
     return NextResponse.json(
       {statusCode: 200, message: "success", data: null},
       {status: 200}
     );
   } catch (error: any) {
-    console.error("Error in DELETE:", error);
     return NextResponse.json({error: error.message}, {status: 500});
   }
 }

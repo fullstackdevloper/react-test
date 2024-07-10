@@ -46,7 +46,7 @@ export default function CreateEditForm() {
     const formData = new FormData();
     formData.append("movieTitle", data.title);
     formData.append("publishingYear", data.releaseDate);
-    formData.append("image", data.file[0]);  // Append the first file
+    formData.append("image", data.file[0]); 
 
     const token = localStorage.getItem("token");
 
@@ -71,7 +71,6 @@ export default function CreateEditForm() {
     }
   };
 
-  console.log(process.env.NEXT_PUBLIC_URL, '--------------------------')
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="lg:grid grid-cols-2 gap-6">

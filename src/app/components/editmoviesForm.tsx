@@ -23,7 +23,7 @@ interface Movie {
 interface EditMoviesFormProps {
   movieId: string;
 }
-// const token = localStorage.getItem("token");
+
 const token = getToken();
 const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
   const { register, handleSubmit, formState: { errors }, setError, control, setValue } = useForm<IFormInput>();
@@ -32,7 +32,6 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Watch the file input for changes
   const file = useWatch({
     control,
     name: "file",
@@ -56,16 +55,16 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
   useEffect(() => {
     const fetchMovieData = async () => {
       try {
+
         const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/movie/${movieId}`, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`
           }
         });
+
         const movieData = response?.data.data;
         setMovie(movieData);
-
-        // Set form values with fetched data
         setValue("title", movieData.movieTitle);
         setValue("releaseDate", new Date(movieData.publishingYear).toISOString().split('T')[0]);
         setSelectedImage(movieData.image);
@@ -83,10 +82,8 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<IFormInput> = async data => {
-    console.log("Form data:", data);
 
     const file = data.file[0];
-
     const formData = new FormData();
     formData.append("movieTitle", data.title);
     formData.append("publishingYear", data.releaseDate);
@@ -103,7 +100,7 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
           }
         }
       );
-      console.log(response.data);
+      
       router.push("/movies-list");
     } catch (error: any) {
       setErrorMessage(error?.response?.data?.message ?? error?.response?.data?.error);

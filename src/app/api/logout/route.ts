@@ -3,7 +3,6 @@ import User from "@/models/usersModel";
 import {NextRequest, NextResponse} from "next/server";
 import jwt from "jsonwebtoken";
 import {
-  successResponseWithMessage,
   badRequest,
   serverError,
 } from "@/helpers/apiResponses";
@@ -52,6 +51,7 @@ async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
+    
   } catch (error: any) {
     return serverError(NextResponse, error.message);
   }
