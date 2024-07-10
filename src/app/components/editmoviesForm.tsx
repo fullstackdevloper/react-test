@@ -124,7 +124,7 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 {selectedImage ? (
-                  <img src={selectedImage || "https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/mobile-0819.jpg"} alt="Selected" className="mb-4 max-h-[200px]" />
+                  <img src={selectedImage} alt="Selected" className="mb-4 max-h-[200px]" />
                 ) : (
                   <>
                     <svg

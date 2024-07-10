@@ -5,7 +5,7 @@ import "./globals.css";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Movie Database",
+  title: "Movies Hub",
   description: "Add new movie in database.",
 };
 

@@ -20,7 +20,7 @@ const MoviesList: React.FC<MoviesListProps> = ({ movies }) => {
         <Link href={`/edit-movie?id=${movie._id}`} key={movie._id} prefetch>
           <div className="bg-[#092C39] rounded-2xl lg:p-2 cursor-pointer">
             <Image
-              src={movie.image || "/images/placeholder.png"}
+              src={movie.image || "https://www.gstatic.com/webp/gallery/1.jpg"}
               alt={movie.movieTitle}
               width={500}
               height={400}
