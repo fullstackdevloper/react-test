@@ -21,7 +21,7 @@ const SignIn: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (typeof window !== 'undefined' && localStorage.getItem("token")) {
       router.push("/movies-list");
     }
   }, []);
@@ -37,7 +37,10 @@ const SignIn: React.FC = () => {
         },
         {
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'Access-Control-Allow-Origin': origin || '*',
+            'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
           }
         }
       );
