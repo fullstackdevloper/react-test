@@ -53,17 +53,16 @@ import { useEffect, useState, useCallback } from "react";
 import ShapeBackground from "../components/common/backgroundShape";
 import EditMoviesForm from "../components/editmoviesForm";
 import { useRouter } from "next/navigation";
+import { getToken } from "@/utils/token";
 
 export default function UpdateMovie() {
   const router = useRouter();
   const [movieId, setMovieId] = useState<string | null>(null);
 
   const checkAuthAndRedirect = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/");
-      }
+    const token = getToken();
+    if (!token) {
+      router.push("/");
     }
   }, [router]);
 
