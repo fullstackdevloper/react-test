@@ -10,7 +10,7 @@ export default function UpdateMovie() {
 
   const checkAuthAndRedirect = useCallback(() => {
     let token;
-    if (typeof window !== 'undefined' && localStorage.getItem("token")) {
+    if (typeof window !== 'undefined') {
        token = localStorage.getItem("token")
     }
    
