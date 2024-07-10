@@ -22,7 +22,7 @@ interface Movie {
 interface EditMoviesFormProps {
   movieId: string;
 }
-const token = localStorage.getItem("token");
+//const token = localStorage.getItem("token");
 
 const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
   const { register, handleSubmit, formState: { errors }, setError, control, setValue } = useForm<IFormInput>();
@@ -58,7 +58,7 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/movie/${movieId}`, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${"token"}`
           }
         });
         const movieData = response?.data.data;
@@ -98,7 +98,7 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${"token"}`
           }
         }
       );
