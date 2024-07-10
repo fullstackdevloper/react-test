@@ -164,6 +164,7 @@ async function GET(req: NextRequest) {
     const savedData = await Movies.find(criteria)
       .populate("userId", "_id email")
       .skip(skip)
+      .sort({ updatedAt: -1 })
       .limit(limit);
 
     return NextResponse.json(

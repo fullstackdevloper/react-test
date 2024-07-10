@@ -9,6 +9,7 @@ import {
   serverError,
 } from "@/helpers/apiResponses";
 import {handleFileUpdate, handleFileUpload} from "@/helpers/upload";
+import moment from "moment";
 
 connect();
 
@@ -23,12 +24,21 @@ connect();
  *
  * @throws Will throw an error if the movie data is not found or if an error occurs during the update process.
  */
-async function PUT(req: NextRequest, userInfo: any, params: {id: string}) {
+async function PUT(
+  req: NextRequest,
+  userInfo: any,
+  params: {id: string}
+) {
   try {
+    let formData;
+ 
+    if (req.headers.get("Content-Type")?.includes("multipart/form-data")) {
+      formData = await req.formData();
+    }
+ 
     const movieId = params.id;
-
-    let movie = await Movies.findOne({_id: movieId, isDeleted: false});
-
+    const movie = await Movies.findOne({_id: movieId, isDeleted: false});
+ 
     if (!movie) {
       return NextResponse.json(
         {
@@ -39,54 +49,111 @@ async function PUT(req: NextRequest, userInfo: any, params: {id: string}) {
         {status: 404}
       );
     }
-
-    const formData = await req.formData();
-    const title = formData.get("movieTitle") as string;
-    const publishingYear = Number(formData.get("publishingYear") as string);
-    const image = formData.get("image") as File;
+ 
     let dataToSave: any = {};
-
-    if (movie.image) {
-      const uploadResult = await handleFileUpdate(image, movie.image);
-
-      const {fileUrl, filename} = uploadResult as {
-        fileUrl: string;
-        filename: string;
-      };
-
-      if (fileUrl) {
-        dataToSave.image = fileUrl;
+ 
+    if (formData) {
+      const title = formData.get("movieTitle") as string;
+      const publishingDate = formData.get("publishingYear") as string;
+      const image = formData.get("image") as File;
+ 
+      if (title && typeof title !== "string") {
+        return NextResponse.json(
+          {
+            statusCode: 400,
+            status: false,
+            message: "Title is required and must be a string",
+          },
+          {status: 400}
+        );
       }
+ 
+      if (
+        publishingDate &&
+        !moment(publishingDate, "YYYY-MM-DD", true).isValid()
+      ) {
+        return NextResponse.json(
+          {
+            statusCode: 400,
+            status: false,
+            message:
+              "Publishing date is required and must be in YYYY-MM-DD format",
+          },
+          {status: 400}
+        );
+      }
+ 
+      const currentDate = moment();
+      const inputDate = moment(publishingDate, "YYYY-MM-DD");
+ 
+      if (
+        publishingDate &&
+        (!inputDate.isValid() || inputDate.isBefore(currentDate, "day"))
+      ) {
+        return NextResponse.json(
+          {
+            statusCode: 400,
+            status: false,
+            message:
+              "Publishing date must be a valid date and cannot be earlier than the current date",
+          },
+          {status: 400}
+        );
+      }
+ 
+      if (image) {
+
+
+        if (movie.image) {
+          if(typeof image != 'string') {
+            const uploadResult = await handleFileUpdate(image, movie.image);
+            const {fileUrl} = uploadResult as {fileUrl: string};
+   
+            if (fileUrl) {
+              dataToSave.image = fileUrl;
+            }
+            
+          }
+ 
+        } else {
+          // const uploadResult = await handleFileUpload(req, image);
+ 
+          // if (!uploadResult) {
+          //   throw new Error("File upload failed");
+          // }
+ 
+          // const {fileUrl} = uploadResult;
+          // dataToSave.image = fileUrl;
+        }
+      }
+ 
+      if (title) {
+        dataToSave.movieTitle = title;
+      }
+ 
+      if (publishingDate) {
+        dataToSave.publishingYear = inputDate.format("YYYY-MM-DD");
+      }
+    }
+ 
+    if (Object.keys(dataToSave).length > 0) {
+      const updatedMovie = await Movies.findByIdAndUpdate(movieId, dataToSave, {
+        new: true,
+      });
+ 
+      return NextResponse.json(
+        {data: updatedMovie, message: "Success"},
+        {status: 200}
+      );
+     
     } else {
-      const uploadResult = await handleFileUpload(req, image);
-
-      if (!uploadResult) {
-        throw new Error("File upload failed");
-      }
-
-      const {fileUrl, filename} = uploadResult;
-
-      dataToSave.image = fileUrl;
+      return NextResponse.json(
+        {data: movie, message: "Success"},
+        {status: 200}
+      );
     }
-
-    if (title) {
-      dataToSave.movieTitle = title;
-    }
-
-    if (!isNaN(publishingYear)) {
-      dataToSave.publishingYear = publishingYear;
-    }
-
-    const updatedMovie = await Movies.findByIdAndUpdate(movieId, dataToSave, {
-      new: true,
-    });
-
-    return NextResponse.json(
-      {data: updatedMovie, message: "Success"},
-      {status: 200}
-    );
   } catch (error: any) {
-    console.error("Error in PUT:", error);
+    console.error("Error in PUT:", error.message);
     return NextResponse.json({error: error.message}, {status: 500});
   }
 }

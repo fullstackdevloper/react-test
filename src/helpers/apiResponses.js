@@ -3,9 +3,10 @@
 export async function successResponseWithMessage(res, success, msg) {
   return res.json(
     {
-      message: msg,
+    
       statusCode: 200,
       success,
+      message: msg,
     },
     {
       status: 200,

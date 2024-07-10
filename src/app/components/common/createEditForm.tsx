@@ -1,9 +1,10 @@
 "use client";
 
 import axios from "axios";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, useWatch  } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface IFormInput {
   title: string;
@@ -11,33 +12,47 @@ interface IFormInput {
   file: FileList;
 }
 
-export default function App() {
-  const { register, handleSubmit, formState: { errors }, setError } = useForm<IFormInput>();
+export default function CreateEditForm() {
+  const { register, handleSubmit, formState: { errors }, setError , control } = useForm<IFormInput>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const router = useRouter();
+  
 
+  // Watch the file input for changes
+  const file = useWatch({
+    control,
+    name: "file",
+  });
+
+  useEffect(() => {
+    if (file && file.length > 0) {
+      const acceptedTypes = ["image/jpeg", "image/png", "image/gif", "image/jpg",];
+      if (!acceptedTypes.includes(file[0].type)) {
+        setError("file", {
+          type: "manual",
+          message: "Only images (jpg, jpeg, png, gif) are allowed."
+        });
+        return;
+      }
+      const imageUrl = URL.createObjectURL(file[0]);
+      setSelectedImage(imageUrl);
+    }
+  }, [file, setError]);
   const onSubmit: SubmitHandler<IFormInput> = async data => {
-    const file = data.file[0];
-    console.log(file, "file")
-    // if (!file) {
-    //   setError("file", {
-    //     type: "manual",
-    //     message: "Please upload a valid image file."
-    //   });
-    //   return;
-    // }
+    setIsLoading(true);
 
-    console.log(data);
     const formData = new FormData();
     formData.append("movieTitle", data.title);
     formData.append("publishingYear", data.releaseDate);
-    // formData.append("image", file);
+    formData.append("image", data.file[0]);  // Append the first file
 
     const token = localStorage.getItem("token");
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/movie",
+        `${process.env.NEXT_PUBLIC_URL}/api/movie`,
         formData,
         {
           headers: {
@@ -46,34 +61,20 @@ export default function App() {
           }
         }
       );
-      console.log(response.data);
+
       router.push("/movies-list");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading file:", error);
+      setErrorMessage(error?.response?.data?.message)
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    console.log("File type:", file?.type);  // Debugging line to check the file type
-    if (file && file.type.startsWith("image/")) {
-      const imageUrl = URL.createObjectURL(file);
-      setSelectedImage(imageUrl);
-      setError("file", { type: "manual", message: "" });  // Clear previous errors
-    } else {
-      setSelectedImage(null);
-      setError("file", {
-        type: "manual",
-        message: "Please upload a valid image file."
-      });
-    }
-  };
-
-  const currentYear = new Date().getFullYear();
-
+  console.log(process.env.NEXT_PUBLIC_URL, '--------------------------')
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="lg:grid grid-cols-2">
+      <div className="lg:grid grid-cols-2 gap-6">
         <div>
           <label
             htmlFor="dropzone-file"
@@ -106,10 +107,9 @@ export default function App() {
             <input
               id="dropzone-file"
               type="file"
-              accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml"
+              accept="image/*"
               className="hidden"
-              {...register("file")}
-              onChange={handleFileChange}
+              {...register("file", { required: "Image file is required" })}
             />
           </label>
           {errors.file && (
@@ -133,13 +133,9 @@ export default function App() {
             <input
               {...register("releaseDate", {
                 required: "Release date is required",
-                pattern: {
-                  value: /^(19|20)\d{2}$/,
-                  message: "Enter a valid year (e.g., 1990, 2024)"
-                },
-                validate: value => parseInt(value) <= currentYear || "Year must be current or past"
               })}
               placeholder="Release Date"
+              type="date"
               className={`bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal leading-6 ${errors.releaseDate ? "border-red-500" : ""}`}
             />
             {errors.releaseDate && (
@@ -147,19 +143,26 @@ export default function App() {
                 {errors.releaseDate.message}
               </p>
             )}
+            {errorMessage && (
+              <p className="text-red-500 text-sm mt-1">
+                {errorMessage}
+              </p>
+            )}
           </div>
           <div className="inline-flex gap-4">
-            <button
-              type="button"
-              className="border border-[#FFFFFF] rounded-[10px] py-[15px] px-14 text-base font-bold leading-6 text-white w-full min-w-[167px]"
-            >
-              Cancel
-            </button>
+          <Link href="/movies-list">
+              <button
+                className="border border-[#FFFFFF] rounded-[10px] py-[15px] px-14 text-base font-bold leading-6 text-white w-full min-w-[167px] flex items-center justify-center"
+              >
+                Cancel
+              </button>
+            </Link>
             <button
               type="submit"
               className="bg-[#2BD17E] rounded-[10px] py-[15px] px-14 text-base font-bold leading-6 text-white w-full min-w-[179px]"
+              disabled={isLoading}
             >
-              Submit
+              {isLoading ? <span className="loader" /> : "Submit"}
             </button>
           </div>
         </div>

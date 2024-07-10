@@ -40,11 +40,11 @@ const verifyToken = (handler) => {
         return NextResponse.json({ statusCode: 401, status: false, message:"User not authenticated. Please log in again." }, { status: 401 });
       }
 
-      // const url = new URL(req.url);
-      // const params = { id: url.pathname.split('/').pop() };
-      // if (params) {
-      //   return handler(req, userInfo, params);
-      // }
+      const url = new URL(req.url);
+      const params = { id: url.pathname.split('/').pop() };
+      if (params) {
+        return handler(req, userInfo, params);
+      }
 
       return handler(req, userInfo);
 

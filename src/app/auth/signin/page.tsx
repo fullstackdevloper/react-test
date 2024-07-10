@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -12,34 +12,58 @@ interface IFormInputs {
 }
 
 const SignIn: React.FC = () => {
-  const { register, formState: { errors }, handleSubmit, reset } = useForm<IFormInputs>();
+  const { register, formState: { errors }, handleSubmit, reset } = useForm<
+    IFormInputs
+  >();
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorPassword, setErrorPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter(); 
+  const router = useRouter();
 
-  const onSubmit: SubmitHandler<IFormInputs> = async data => {    
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      router.push("/movies-list");
+    }
+  }, []);
+
+  const onSubmit: SubmitHandler<IFormInputs> = async data => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`http://localhost:3000/api/login`, {
-        email: data.email,
-        password: data.password
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/api/login`,
+        {
+          email: data.email,
+          password: data.password
+        },
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
         }
-      });     
+      );
 
-      if (response.data.statusCode === 200) { 
-        reset();     
-        localStorage.setItem("token",response.data.token);
-        router.push('/movies-list');  
+      if (response.data.statusCode === 200) {
+        localStorage.setItem("token", response.data.token);
+        new Promise<void>((resolve) => {
+          resolve();
+        }).then(() => {
+          router.push("/movies-list");
+          reset();
+        });
       } else {
         setErrorMessage("Form submission failed. " + response.data.message);
       }
-    } catch (error: any) {
-      setErrorMessage(error.data.message);
-    }
-    finally {
+    } catch (error:any) {
+      const errorMessage = error?.response?.data?.message ?? 'something went wrong';
+      if(errorMessage == 'Invalid password') {
+        setErrorPassword(errorMessage);
+        setErrorMessage('');
+      } else {
+        setErrorMessage(errorMessage);
+        setErrorPassword('');
+      }
+      
+    } finally {
       setIsLoading(false);
     }
   };
@@ -63,6 +87,10 @@ const SignIn: React.FC = () => {
             <p className="text-xs text-red-600 font-medium">
               {errors.email.message}
             </p>}
+            {errorMessage &&
+               <p className="text-xs text-red-600 font-medium mt-2">
+            {errorMessage}
+          </p>}
         </div>
 
         <div className="mb-6">
@@ -78,10 +106,18 @@ const SignIn: React.FC = () => {
               }
             })}
           />
+          <>
           {errors.password &&
             <p className="text-xs text-red-600 font-medium">
               {errors.password.message}
             </p>}
+
+            {errorPassword &&
+               <p className="text-xs text-red-600 font-medium mt-2">
+            {errorPassword}
+          </p>}
+            
+          </>
         </div>
 
         <div className="flex items-center mb-6">
@@ -95,14 +131,18 @@ const SignIn: React.FC = () => {
             Remember me
           </label>
         </div>
-            <button type="submit" className="bg-[#2BD17E] rounded-[15px] py-[15px] px-7 text-base font-bold leading-6 text-white w-full cursor-pointer" disabled={isLoading}>
-            {isLoading ? <span className="loader"></span> : "Submit"}
-            </button>
+        <button
+          type="submit"
+          className="bg-[#2BD17E] rounded-[15px] py-[15px] px-7 text-base font-bold leading-6 text-white w-full cursor-pointer"
+          disabled={isLoading}
+        >
+          {isLoading ? <span className="loader" /> : "Submit"}
+        </button>
         {/* <input type="submit" className="bg-[#2BD17E] rounded-[15px] py-[15px] px-7 text-base font-bold leading-6 text-white w-full cursor-pointer" /> */}
-      </form>      
-      {errorMessage && <p className="text-xs text-red-600 font-medium mt-2">{errorMessage}</p>}
+      </form>
+      
     </div>
   );
-}
+};
 
 export default SignIn;

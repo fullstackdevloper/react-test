@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import ShapeBackground from "../components/common/backgroundShape";
 import Link from "next/link";
-import PrimaryButton from '../components/common/primaryBtn';
-import MoviesList from '../components/movies';
-import axios from 'axios'; // Import Axios
+import PrimaryButton from "../components/common/primaryBtn";
+import MoviesList from "../components/movies";
+import axios from "axios"; // Import Axios
+import { useRouter } from "next/navigation";
 
 interface Movie {
   _id: string;
@@ -18,43 +19,65 @@ interface Movie {
 const MovieList: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-console.log("movies :" ,movies)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(8);
+
+  const router = useRouter();
+
   useEffect(() => {
-    async function fetchMovies() {
-      const token = localStorage.getItem("token");
-
-      try {
-        const response = await axios.get('http://localhost:3000/api/movie', {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`, 
-          },
-        });
-
-        const { data } = response;
-      
-        console.log("data : " , data)
-        if (data ) {
-          console.log("movies 2 :" ,movies)
-          setMovies(data.data);
-        } else {
-          setMovies([]);
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-        setMovies([]);
-      } finally {
-        setLoading(false);
-      }  
+    if (!localStorage.getItem("token")) {
+      router.push("/");
+    } else {
+      fetchMovies(currentPage);
     }
+  }, [currentPage]);
 
-    fetchMovies();
-  }, []);
+  async function fetchMovies(page: number) {
+    const token = localStorage.getItem("token");
+    const query = `?page=${page}&limit=${limit}`;
 
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_URL}/api/movie${query}`,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  const handleLogout = () => {
-    localStorage.setItem("token","");
+      const { data } = response;
+
+      if (data) {
+        setMovies(data.data);
+        setTotalPages(data.totalPages); // Assuming API returns total pages
+      } else {
+        setMovies([]);
+      }
+    } catch (error) {
+      setMovies([]);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    localStorage.removeItem("token");
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_URL}/api/logout`,
+      {}, // Body is empty if it's just a logout request
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    router.push("/");
+  };
 
   if (loading) {
     return (
@@ -92,17 +115,20 @@ console.log("movies :" ,movies)
             </h2>
             <Link href="/create-movie">
               <Image
-                src="./images/add-plus-icon.svg"
+                src="/images/add-plus-icon.svg"
                 alt="add-plus-icon"
                 width={32}
                 height={32}
               />
             </Link>
           </div>
-          <button className="text-base text-white font-bold leading-6 flex justify-between items-center gap-3" onClick={handleLogout}>
+          <button
+            className="text-base text-white font-bold leading-6 flex justify-between items-center gap-3"
+            onClick={handleLogout}
+          >
             <span className="lg:block hidden">Logout </span>
             <Image
-              src="./images/logout.svg"
+              src="/images/logout.svg"
               alt="logout"
               width={24}
               height={24}
@@ -110,11 +136,54 @@ console.log("movies :" ,movies)
           </button>
         </div>
         <MoviesList movies={movies} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
       <div className="">
         <ShapeBackground />
       </div>
     </main>
+  );
+};
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const pages = [];
+
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex justify-center mt-4">
+      <button
+        className="px-4 py-2 mx-1 bg-gray-200 rounded disabled:opacity-50"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+      {pages.map((page) => (
+        <button
+          key={page}
+          className={`px-4 py-2 mx-1 rounded ${
+            page === currentPage ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+          onClick={() => onPageChange(page)}
+        >
+          {page}
+        </button>
+      ))}
+      <button
+        className="px-4 py-2 mx-1 bg-gray-200 rounded disabled:opacity-50"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </button>
+    </div>
   );
 };
 
