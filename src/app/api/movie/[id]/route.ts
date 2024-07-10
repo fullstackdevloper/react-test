@@ -101,31 +101,31 @@ async function PUT(
         );
       }
  
-      if (image) {
+      // if (image) {
 
 
-        if (movie.image) {
-          if(typeof image != 'string') {
-            const uploadResult = await handleFileUpdate(image, movie.image);
-            const {fileUrl} = uploadResult as {fileUrl: string};
+      //   if (movie.image) {
+      //     if(typeof image != 'string') {
+      //       const uploadResult = await handleFileUpdate(image, movie.image);
+      //       const {fileUrl} = uploadResult as {fileUrl: string};
    
-            if (fileUrl) {
-              dataToSave.image = fileUrl;
-            }
+      //       if (fileUrl) {
+      //         dataToSave.image = fileUrl;
+      //       }
             
-          }
+      //     }
  
-        } else {
-          // const uploadResult = await handleFileUpload(req, image);
+      //   } else {
+      //     // const uploadResult = await handleFileUpload(req, image);
  
-          // if (!uploadResult) {
-          //   throw new Error("File upload failed");
-          // }
+      //     // if (!uploadResult) {
+      //     //   throw new Error("File upload failed");
+      //     // }
  
-          // const {fileUrl} = uploadResult;
-          // dataToSave.image = fileUrl;
-        }
-      }
+      //     // const {fileUrl} = uploadResult;
+      //     // dataToSave.image = fileUrl;
+      //   }
+      // }
  
       if (title) {
         dataToSave.movieTitle = title;

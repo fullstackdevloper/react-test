@@ -77,6 +77,7 @@ const SignIn: React.FC = () => {
         <div className="mb-6">
           <input
             id="email"
+            placeholder="Email"
             className="bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal w-full mb-1"
             {...register("email", {
               required: "Email is required",
@@ -84,6 +85,7 @@ const SignIn: React.FC = () => {
                 value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
                 message: "Invalid email address"
               }
+              
             })}
           />
           {errors.email &&
@@ -99,6 +101,7 @@ const SignIn: React.FC = () => {
         <div className="mb-6">
           <input
             id="password"
+             placeholder="Password"
             className="bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal w-full mb-1"
             type="password"
             {...register("password", {
@@ -123,7 +126,7 @@ const SignIn: React.FC = () => {
           </>
         </div>
 
-        <div className="flex items-center mb-6">
+        <div className="flex justify-center items-center mb-6">
           <input
             type="checkbox"
             id="remember"

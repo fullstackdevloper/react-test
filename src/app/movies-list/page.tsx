@@ -166,32 +166,33 @@ const
       }
 
       return (
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center lg:mt-[120px] mt-[80px]">
+        <button
+          className="px-4 py-2 mx-1 text-base font-bold leading-6 text-white"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        {pages.map((page) => (
           <button
-            className="px-4 py-2 mx-1 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
+            key={page}
+            className={`px-4 py-2 mx-1 rounded ${
+              page === currentPage ? "bg-[#2BD17E] text-base font-bold leading-6 text-white" : "bg-[#092C39] text-base font-bold leading-6 text-white"
+            }`}
+            onClick={() => onPageChange(page)}
           >
-            Previous
+            {page}
           </button>
-          {pages.map((page) => (
-            <button
-              key={page}
-              className={`px-4 py-2 mx-1 rounded ${page === currentPage ? "bg-blue-500 text-white" : "bg-gray-200"
-                }`}
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            className="px-4 py-2 mx-1 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
+        ))}
+        <button
+          className="px-4 py-2 mx-1 text-base font-bold leading-6 text-white"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
       );
     };
 

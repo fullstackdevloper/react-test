@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useForm, SubmitHandler, useWatch  } from "react-hook-form";
+import { useForm, SubmitHandler, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -13,12 +13,12 @@ interface IFormInput {
 }
 
 export default function CreateEditForm() {
-  const { register, handleSubmit, formState: { errors }, setError , control } = useForm<IFormInput>();
+  const { register, handleSubmit, formState: { errors }, setError, control } = useForm<IFormInput>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const router = useRouter();
-  
+
 
   // Watch the file input for changes
   const file = useWatch({
@@ -75,14 +75,14 @@ export default function CreateEditForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="lg:grid grid-cols-2 gap-6">
-        <div>
+        <div className="lg:mb-0 mb-4">
           <label
             htmlFor="dropzone-file"
-            className="flex flex-col items-center justify-center w-full min-w-[473px] max-w-[473px] h-full min-h-[504px] border-2 border-[#fff] border-dashed rounded-lg cursor-pointer bg-[#224957]"
+            className="flex flex-col items-center justify-center w-full lg:min-w-[473px] lg:max-w-[473px] h-full lg:min-h-[504px] min-h-[372px] border-2 border-[#fff] border-dashed rounded-lg cursor-pointer bg-[#224957] lg:mb-0 mb-4"
           >
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               {selectedImage ? (
-                <img src={selectedImage} alt="Selected" className="mb-4 max-h-[200px]" />
+                <img src={selectedImage || "https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/mobile-0819.jpg"} alt="Selected" className="mb-4 max-h-[200px]" />
               ) : (
                 <svg
                   className="w-8 h-8 mb-4 text-white"
@@ -109,7 +109,7 @@ export default function CreateEditForm() {
               type="file"
               accept="image/*"
               className="hidden"
-              {...register("file", { required: "Image file is required" })}
+              {...register("file",)}
             />
           </label>
           {errors.file && (
@@ -121,7 +121,7 @@ export default function CreateEditForm() {
             <input
               {...register("title", { required: "Title is required" })}
               placeholder="Title"
-              className="bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal w-full leading-6 min-w-[362px] max-w-[362px]"
+              className="bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal w-full leading-6 lg:min-w-[362px] lg:max-w-[362px]"
             />
             {errors.title && (
               <p className="text-red-500 text-sm mt-1">
@@ -136,7 +136,7 @@ export default function CreateEditForm() {
               })}
               placeholder="Release Date"
               type="date"
-              className={`bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal leading-6 ${errors.releaseDate ? "border-red-500" : ""}`}
+              className={`bg-[#224957] rounded-[10px] px-4 py-2.5 text-sm text-white font-normal leading-6 lg:w-auto w-full ${errors.releaseDate ? "border-red-500" : ""}`}
             />
             {errors.releaseDate && (
               <p className="text-red-500 text-sm mt-1">
@@ -150,16 +150,16 @@ export default function CreateEditForm() {
             )}
           </div>
           <div className="inline-flex gap-4">
-          <Link href="/movies-list">
+            <Link href="/movies-list">
               <button
-                className="border border-[#FFFFFF] rounded-[10px] py-[15px] px-14 text-base font-bold leading-6 text-white w-full min-w-[167px] flex items-center justify-center"
+                className="border border-[#FFFFFF] rounded-[10px] py-[15px] lg:px-14 px-12 text-base font-bold leading-6 text-white w-full lg:min-w-[167px] flex items-center justify-center"
               >
                 Cancel
               </button>
             </Link>
             <button
               type="submit"
-              className="bg-[#2BD17E] rounded-[10px] py-[15px] px-14 text-base font-bold leading-6 text-white w-full min-w-[179px]"
+              className="bg-[#2BD17E] rounded-[10px] py-[15px] lg:px-14 px-14 text-base font-bold leading-6 text-white w-full lg:min-w-[179px]"
               disabled={isLoading}
             >
               {isLoading ? <span className="loader" /> : "Submit"}

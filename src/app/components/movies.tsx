@@ -25,7 +25,7 @@ const MoviesList: React.FC<MoviesListProps> = ({ movies }) => {
               width={500}
               height={400}
               sizes="100vw"
-              className="lg:mb-4 w-full h-auto lg:min-h-[400px] object-cover lg:rounded-2xl rounded-t-xl"
+              className="lg:mb-4 w-full h-auto lg:min-h-[400px] min-h-[246px] object-cover lg:rounded-2xl rounded-t-xl"
             />
             <div className="lg:px-2 p-3">
               <h3 className="lg:text-xl text-base font-medium lg:leading-8 leading-6 text-white mb-4">

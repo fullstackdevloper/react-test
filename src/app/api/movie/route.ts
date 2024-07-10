@@ -57,12 +57,12 @@ async function POST(req: NextRequest, userInfo: any) {
   
       const image = formData.get("image") as File;
 
-      if (!image) {
-        return NextResponse.json(
-          { statusCode: 400, status: false, message: "image is required" },
-          { status: 400 }
-        );
-      }
+      // if (!image) {
+      //   return NextResponse.json(
+      //     { statusCode: 400, status: false, message: "image is required" },
+      //     { status: 400 }
+      //   );
+      // }
       const userId = userInfo.id;
 
       let dataToSave: any = {
@@ -71,17 +71,17 @@ async function POST(req: NextRequest, userInfo: any) {
           userId: userId,
       };
 
-      if (image) {
-          const uploadResult = await handleFileUpload(req, image);
-          // console.log("uploadResult : " + uploadResult)
-          if (!uploadResult) {
-              throw new Error("File upload failed");
-          }
+      // if (image) {
+      //     const uploadResult = await handleFileUpload(req, image);
+      //     // console.log("uploadResult : " + uploadResult)
+      //     if (!uploadResult) {
+      //         throw new Error("File upload failed");
+      //     }
 
-          const { fileUrl, filename } = uploadResult;
+      //     const { fileUrl, filename } = uploadResult;
 
-          dataToSave.image = fileUrl;
-      }
+      //     dataToSave.image = fileUrl;
+      // }
 
       // Assuming Movies is your database model for movies and has a create method
       const savedData = await Movies.create(dataToSave);
