@@ -44,11 +44,13 @@ async function POST(request: NextRequest) {
 
     await User.findByIdAndUpdate(userId, {token: null});
 
-    return successResponseWithMessage(
-      NextResponse,
-      true,
-      200,
-      "Logout successful"
+    return NextResponse.json(
+      {
+        statusCode: 200,
+        status: true,
+        message: "logout success",
+      },
+      { status: 200 }
     );
   } catch (error: any) {
     return serverError(NextResponse, error.message);
