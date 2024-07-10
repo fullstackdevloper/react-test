@@ -1,9 +1,22 @@
-import Image from "next/image";
+"use client";
 import CreateEditForm from "../components/common/createEditForm";
 import ShapeBackground from "../components/common/backgroundShape";
-import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { getToken } from "@/utils/token";
 
 export default function CreateMovie() {
+  const router = useRouter();
+  const checkAuthAndRedirect = useCallback(() => {
+    const token = getToken();
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    checkAuthAndRedirect();
+  }, [checkAuthAndRedirect]);
   return (
     <main className="bg-[#093545]">
       <div className="lg:max-w-screen-xl mx-auto lg:pb-[120px] pb-20 lg:px-0 px-6">
