@@ -5,6 +5,7 @@ import { useForm, SubmitHandler, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getToken } from "@/utils/token";
 
 interface IFormInput {
   title: string;
@@ -22,8 +23,8 @@ interface Movie {
 interface EditMoviesFormProps {
   movieId: string;
 }
-//const token = localStorage.getItem("token");
-
+// const token = localStorage.getItem("token");
+const token = getToken();
 const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
   const { register, handleSubmit, formState: { errors }, setError, control, setValue } = useForm<IFormInput>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -58,7 +59,7 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/api/movie/${movieId}`, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${"token"}`
+            Authorization: `Bearer ${token}`
           }
         });
         const movieData = response?.data.data;
@@ -98,7 +99,7 @@ const EditMoviesForm: React.FC<EditMoviesFormProps> = ({ movieId }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${"token"}`
+            Authorization: `Bearer ${token}`
           }
         }
       );

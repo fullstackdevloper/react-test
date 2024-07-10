@@ -60,10 +60,10 @@ export default function UpdateMovie() {
   const [movieId, setMovieId] = useState<string | null>(null);
 
   const checkAuthAndRedirect = useCallback(() => {
-  //  // const token = getToken();
-  //   if (!token) {
-  //     router.push("/");
-  //   }
+    const token = getToken();
+    if (!token) {
+      router.push("/");
+    }
   }, [router]);
 
   useEffect(() => {
